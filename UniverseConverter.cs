@@ -5,17 +5,12 @@ using EveStaticDataExportConverter.Classes.Universe.SupportingClasses;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace EveStaticDataExportConverter
 {
     internal class UniverseConverter
     {
-        string unversePath = "{path to json conversion}\\json_sde\\universe";
+        string unversePath = "C:\\Users\\mrphi\\source\\repos\\EveStaticDataExportConverter\\EveOnline_StaticDataExport_Converter\\json_sde\\universe";
         TableInfo regionTableInfo;
         TableInfo constellationTableInfo;
         TableInfo solarSystemTableInfo;
@@ -30,6 +25,20 @@ namespace EveStaticDataExportConverter
         TableInfo moonStatisticsTableInfo;
         TableInfo planetAsteroidBeltTableInfo;
         TableInfo asteroidBeltStatsTableInfo;
+
+        private List<SolarSystem> solarSystems = new List<SolarSystem>();
+        private List<SolarSystemStar> solarSystemStars = new List<SolarSystemStar>();
+        private List<SolarSystemPlanet> solarSystemPlanets = new List<SolarSystemPlanet>();
+        private List<PlanetAttributes> planetAttributes = new List<PlanetAttributes>();
+        private List<PlanetStatistics> planetStatistics = new List<PlanetStatistics>();
+        private List<PlanetMoon> planetMoons = new List<PlanetMoon>();
+        private List<MoonAttributes> moonAttributes = new List<MoonAttributes>();
+        private List<MoonStatistics> MoonStatistics = new List<MoonStatistics>();
+        private List<PlanetAsteroidBelt> planetAsteroidBelts = new List<PlanetAsteroidBelt>();
+        private List<AsteroidBetlStatistics> AsteroidBetlStatistics = new List<AsteroidBetlStatistics>();
+        private List<StarStatistics> starStats = new List<StarStatistics>();
+        private List<SolarSystemStargate> solarSystemStargates = new List<SolarSystemStargate>();
+
         public bool ConvertUniverse()
         {
             string[] universeAreas = Directory.GetDirectories(unversePath);
@@ -40,6 +49,7 @@ namespace EveStaticDataExportConverter
             {
                 ProcessArea(universeArea);
             }
+            HandleLeftoverRecords();
             return true;
         }
 
@@ -89,25 +99,40 @@ namespace EveStaticDataExportConverter
             DatabaseManager.CreateTable(asteroidBeltStatsTableInfo);
         }
 
-        private async void ProcessArea(string areaPath)
+        private void HandleLeftoverRecords()
+        {
+            Utility.InsertBatchRecord<SolarSystem>(solarSystemTableInfo, solarSystems);
+            Utility.InsertBatchRecord<SolarSystemStar>(solarSystemStarTableInfo, solarSystemStars);
+            Utility.InsertBatchRecord<SolarSystemPlanet>(solarSystemPlanetTableInfo, solarSystemPlanets);
+            Utility.InsertBatchRecord<PlanetAttributes>(planetAttributesTableInfo, planetAttributes);
+            Utility.InsertBatchRecord<PlanetStatistics>(planetStatsTableInfo, planetStatistics);
+            Utility.InsertBatchRecord<PlanetMoon>(planetMoonTableInfo, planetMoons);
+            Utility.InsertBatchRecord<MoonAttributes>(moonAttributesTableInfo, moonAttributes);
+            Utility.InsertBatchRecord<MoonStatistics>(moonStatisticsTableInfo, MoonStatistics);
+            Utility.InsertBatchRecord<PlanetAsteroidBelt>(planetAsteroidBeltTableInfo, planetAsteroidBelts);
+            Utility.InsertBatchRecord<AsteroidBetlStatistics>(asteroidBeltStatsTableInfo, AsteroidBetlStatistics);
+            Utility.InsertBatchRecord<StarStatistics>(starStatsTableInfo, starStats);
+            Utility.InsertBatchRecord<SolarSystemStargate>(solarSystemStargateTableInfo, solarSystemStargates);
+        }
+
+        private  void ProcessArea(string areaPath)
         {
             string[] regions = Directory.GetDirectories(areaPath);
             string regionTypeName = areaPath.Substring(areaPath.LastIndexOf('\\') + 1);
 
-            List<Task> tasks = new List<Task>();
             foreach (string region in regions)
             {
                 //Process regions concurrently. 
-                tasks.Add(ProcessRegion(region, regionTypeName)); 
+                ProcessRegion(region, regionTypeName); 
             }
-            await Task.WhenAll(tasks);
         }
 
-        private Task ProcessRegion(string regionPath, string regionTypeName)
+        private void ProcessRegion(string regionPath, string regionTypeName)
         {
             string regionFileName = regionPath + "\\region.json";
             string regionName = regionPath.Substring(regionPath.LastIndexOf('\\') + 1);
 
+            Stopwatch sw = Stopwatch.StartNew();
             Console.WriteLine("");
             Console.WriteLine("Processing Region " + regionName);
             string json = File.ReadAllText(regionFileName);
@@ -118,8 +143,9 @@ namespace EveStaticDataExportConverter
             {
                 ProcessConstellation(constellation, regionID);
             }
-
-            return Task.CompletedTask;
+            sw.Stop();
+            Console.WriteLine();
+            Utility.LogElapsedTime(sw, "Converting " + regionName);
         }
 
         private long ConvertRegionFromJSON(string json, string regionName, string regionTypeName)
@@ -216,12 +242,9 @@ namespace EveStaticDataExportConverter
             string systemFileName = systemPath + "\\solarsystem.json";
             string systemName = systemPath.Substring(systemPath.LastIndexOf('\\') + 1);
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            Console.WriteLine("Converting " + systemName);
             string json = File.ReadAllText(systemFileName);
             ConvertSystemFromJSON(json, systemName, regionID, constellationID);
-            sw.Stop();
-            Utility.LogElapsedTime(sw, "Converting " +  systemName);
         }
 
         private void ConvertSystemFromJSON(string json, string systemName, long regionID, long constellationID)
@@ -253,7 +276,7 @@ namespace EveStaticDataExportConverter
                     solarSystem.minY = solarSystem.min[1];
                     solarSystem.minZ = solarSystem.min[2];
                 }
-                DatabaseManager.InsertRecordForType<SolarSystem>(solarSystemTableInfo, solarSystem);
+                Utility.AddRecordToBatch<SolarSystem>(solarSystemTableInfo, ref solarSystems, solarSystem);
 
                 InsertPlanetRecords(solarSystem);
                 InsertStarRecords(solarSystem);
@@ -268,8 +291,8 @@ namespace EveStaticDataExportConverter
                 foreach (SolarSystemPlanet planet in solarSystem.planets)
                 {
                     planet.solarSystemID = solarSystem.solarSystemID;
-                    DatabaseManager.InsertRecordForType<SolarSystemPlanet>(solarSystemPlanetTableInfo, planet);
-
+                    Utility.AddRecordToBatch<SolarSystemPlanet>(solarSystemPlanetTableInfo, ref solarSystemPlanets, planet);
+                    
                     InsertPlanetAttributeRecords(planet);
                     InsertPlanetMoonRecords(planet);
                     InsertPlanetAsteroidBeltRecords(planet);
@@ -283,7 +306,8 @@ namespace EveStaticDataExportConverter
             if (planet.planetAttributes != null)
             {
                 planet.planetAttributes.planetID = planet.planetID;
-                DatabaseManager.InsertRecordForType<PlanetAttributes>(planetAttributesTableInfo, planet.planetAttributes);
+                Utility.AddRecordToBatch<PlanetAttributes>(planetAttributesTableInfo, ref planetAttributes, planet.planetAttributes);
+                
             }
         }
 
@@ -292,7 +316,8 @@ namespace EveStaticDataExportConverter
             if (planet.statistics != null)
             {
                 planet.statistics.planetID = planet.planetID;
-                DatabaseManager.InsertRecordForType<PlanetStatistics>(planetStatsTableInfo, planet.statistics);
+                Utility.AddRecordToBatch<PlanetStatistics>(planetStatsTableInfo, ref planetStatistics, planet.statistics);
+
             }
         }
 
@@ -303,18 +328,18 @@ namespace EveStaticDataExportConverter
                 foreach (PlanetMoon moon in planet.moons)
                 {
                     moon.planetID = planet.planetID;
-                    DatabaseManager.InsertRecordForType<PlanetMoon>(planetMoonTableInfo, moon);
+                    Utility.AddRecordToBatch<PlanetMoon>(planetMoonTableInfo, ref planetMoons, moon);
 
                     if (moon.planetAttributes != null)
                     {
                         moon.planetAttributes.moonID = moon.moonID;
-                        DatabaseManager.InsertRecordForType<MoonAttributes>(moonAttributesTableInfo, moon.planetAttributes);
+                        Utility.AddRecordToBatch<MoonAttributes>(moonAttributesTableInfo, ref moonAttributes, moon.planetAttributes);
                     }
 
                     if (moon.statistics != null)
                     {
                         moon.statistics.moonID = moon.moonID;
-                        DatabaseManager.InsertRecordForType<MoonStatistics>(moonStatisticsTableInfo, moon.statistics);
+                        Utility.AddRecordToBatch<MoonStatistics>(moonStatisticsTableInfo, ref MoonStatistics, moon.statistics);
                     }
                 }
             }
@@ -327,12 +352,13 @@ namespace EveStaticDataExportConverter
                 foreach (PlanetAsteroidBelt asteroidBelt in planet.asteroidBelts)
                 {
                     asteroidBelt.planetID = planet.planetID;
-                    DatabaseManager.InsertRecordForType<PlanetAsteroidBelt>(planetAsteroidBeltTableInfo, asteroidBelt);
+                    Utility.AddRecordToBatch<PlanetAsteroidBelt>(planetAsteroidBeltTableInfo, ref planetAsteroidBelts, asteroidBelt);
+                    
 
                     if (asteroidBelt.statistics != null)
                     {
                         asteroidBelt.statistics.asteroidBeltID = asteroidBelt.asteroidBeltID;
-                        DatabaseManager.InsertRecordForType<AsteroidBetlStatistics>(asteroidBeltStatsTableInfo, asteroidBelt.statistics);
+                        Utility.AddRecordToBatch<AsteroidBetlStatistics>(asteroidBeltStatsTableInfo, ref AsteroidBetlStatistics, asteroidBelt.statistics);
                     }
                 }
             }
@@ -343,13 +369,13 @@ namespace EveStaticDataExportConverter
             if (solarSystem.star != null)
             {
                 solarSystem.star.solarSystemID = solarSystem.solarSystemID;
-                DatabaseManager.InsertRecordForType<SolarSystemStar>(solarSystemStarTableInfo, solarSystem.star);
+                Utility.AddRecordToBatch<SolarSystemStar>(solarSystemStarTableInfo, ref solarSystemStars, solarSystem.star);
 
 
                 if (solarSystem.star.statistics != null)
                 {
                     solarSystem.star.statistics.starID = solarSystem.star.starID;
-                    DatabaseManager.InsertRecordForType<StarStatistics>(starStatsTableInfo, solarSystem.star.statistics);
+                    Utility.AddRecordToBatch<StarStatistics>(starStatsTableInfo, ref starStats, solarSystem.star.statistics);
                 }
             }
         }
@@ -361,7 +387,7 @@ namespace EveStaticDataExportConverter
                 foreach (SolarSystemStargate stargate in solarSystem.stargates)
                 {
                     stargate.solarSystemID = solarSystem.solarSystemID;
-                    DatabaseManager.InsertRecordForType<SolarSystemStargate>(solarSystemStargateTableInfo, stargate);
+                    Utility.AddRecordToBatch<SolarSystemStargate>(solarSystemStargateTableInfo, ref solarSystemStargates, stargate);
                 }
             }
         }

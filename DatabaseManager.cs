@@ -156,6 +156,84 @@ namespace EveStaticDataExportConverter
             ExecuteCommand(createCommand.ToString());
         }
 
+        public static void InsertRecordsForListofTypes<T>(TableInfo tableInfo, List<T> records)
+        {
+
+            StringBuilder createCommand = new StringBuilder();
+            createCommand.Append(GetInsertLine(tableInfo));
+            createCommand.AppendLine(GetValuesLines<T>(tableInfo, records));
+            ExecuteCommand(createCommand.ToString());
+        }
+
+        private static string GetInsertLine(TableInfo tableInfo)
+        {
+            StringBuilder createCommand = new StringBuilder();
+            createCommand.Append("INSERT INTO ");
+            createCommand.Append(tableInfo.Name);
+            createCommand.Append(" (");
+            for (int i = 0; i < tableInfo.columns.Count; i++)
+            {
+                createCommand.Append(tableInfo.columns[i].Split(" ")[0]);
+                if (i != tableInfo.columns.Count - 1)
+                {
+                    createCommand.Append(", ");
+                }
+            }
+            createCommand.Append(")");
+            createCommand.AppendLine();
+            return createCommand.ToString();
+        }
+
+        private static string GetValuesLines<T>(TableInfo tableInfo, List<T> records)
+        {
+            StringBuilder createCommand = new StringBuilder();
+            List<string> values = null;
+            System.TypeCode typeCode;
+            values = new List<string>();
+            Classes.Attributes.SQLIgnore sqlIgnore;
+            createCommand.Append("VALUES ");
+            int recordCount = 0;
+
+            foreach (T record in records)
+            {
+                values = new List<string>();
+                foreach (System.Reflection.PropertyInfo property in typeof(T).GetProperties())
+                {
+                    sqlIgnore = property.GetCustomAttribute<Classes.Attributes.SQLIgnore>();
+                    if (sqlIgnore != null) { continue; }
+
+                    typeCode = Type.GetTypeCode(property.PropertyType);
+                    if (typeCode == TypeCode.Boolean)
+                    {
+                        values.Add((Convert.ToBoolean(property.GetValue(record)) ? 1 : 0).ToString());
+                    }
+                    else
+                    {
+                        values.Add(property.GetValue(record).ToString());
+                    }
+                }
+                createCommand.Append("(");
+                for (int i = 0; i < values.Count; i++)
+                {
+                    createCommand.Append("'");
+                    createCommand.Append(values[i].Replace("'", "''").Replace(@"\", @"\\"));
+                    createCommand.Append("'");
+                    if (i != values.Count - 1)
+                    {
+                        createCommand.Append(", ");
+                    }
+                }
+                createCommand.Append(")");
+                if (recordCount != records.Count - 1)
+                {
+                    createCommand.Append(",");
+                    createCommand.AppendLine("");
+                }
+                recordCount++;
+            }
+            return createCommand.ToString();
+        }
+
         private static void ExecuteCommand(string commandString)
         {
             string connectionString = "Data Source=" + outputFilePath + ";Version=3;";

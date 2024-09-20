@@ -19,7 +19,7 @@ namespace EveStaticDataExportConverter
 {
     internal class FSDConverter
     {
-        string fsdPath = "{path to json conversion}\\json_sde\\fsd";
+        string fsdPath = "C:\\Users\\mrphi\\source\\repos\\EveStaticDataExportConverter\\EveOnline_StaticDataExport_Converter\\json_sde\\fsd";
 
         public bool ConvertFSD()
         {
@@ -100,6 +100,7 @@ namespace EveStaticDataExportConverter
             int count = 0;
             Agent newAgent;
             JObject agentArray = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            List<Agent> batchAgents = new List<Agent>();
 
             if (agentArray != null)
             {
@@ -107,9 +108,10 @@ namespace EveStaticDataExportConverter
                 {
                     newAgent = Newtonsoft.Json.JsonConvert.DeserializeObject<Agent>(token.First.ToString());
                     newAgent.agentId = Convert.ToInt64(token.Path);
-                    DatabaseManager.InsertRecordForType<Agent>(agentTableInfo, newAgent);
+                    Utility.AddRecordToBatch<Agent>(agentTableInfo, ref batchAgents, newAgent);
                     count++;
                 }
+                Utility.InsertBatchRecord<Agent>(agentTableInfo, batchAgents);
             }
             return count;
         }
@@ -376,7 +378,12 @@ namespace EveStaticDataExportConverter
             int count = 0;
             Blueprints newBlueprint = null;
             JObject bpArray = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
-
+            List<Blueprints> batchBlureprints = new List<Blueprints>();
+            List<BlueprintActivityType> batchActivityTypes = new List<BlueprintActivityType>();
+            List<BlueprintActivityMaterial> batchMaterials = new List<BlueprintActivityMaterial>();
+            List<BlueprintProduct> batchProducts = new List<BlueprintProduct>();
+            List<BlueprintSkill> batchSkills = new List<BlueprintSkill>();
+           
             try
             {
                 if (bpArray != null)
@@ -385,76 +392,104 @@ namespace EveStaticDataExportConverter
                     {
                         newBlueprint = Newtonsoft.Json.JsonConvert.DeserializeObject<Blueprints>(token.First.ToString());
                         newBlueprint.blueprintTypeID = Convert.ToInt32(token.Path);
-                        DatabaseManager.InsertRecordForType<Blueprints>(blueprintsTable, newBlueprint);
-
+                        Utility.AddRecordToBatch<Blueprints>(blueprintsTable, ref batchBlureprints, newBlueprint);
 
                         if (newBlueprint.activities.copying != null)
                         {
-                            InsertReordForActivity(bpActivityTypeTable,
+                            SetActivityInfoForType(bpActivityTypeTable,
                                                    bpActivityMatTable,
                                                    bpActivitySkillTable,
                                                    bpProductTable,
                                                    newBlueprint.activities.copying,
                                                    "copying",
-                                                   newBlueprint.blueprintTypeID);
+                                                   newBlueprint.blueprintTypeID,
+                                                   ref batchActivityTypes,
+                                                   ref batchMaterials,
+                                                   ref batchProducts,
+                                                   ref batchSkills);
                         }
 
                         if (newBlueprint.activities.manufacturing != null)
                         {
-                            InsertReordForActivity(bpActivityTypeTable,
+                            SetActivityInfoForType(bpActivityTypeTable,
                                                    bpActivityMatTable,
                                                    bpActivitySkillTable,
                                                    bpProductTable,
                                                    newBlueprint.activities.manufacturing,
                                                    "manufacturing",
-                                                   newBlueprint.blueprintTypeID);
+                                                   newBlueprint.blueprintTypeID,
+                                                   ref batchActivityTypes,
+                                                   ref batchMaterials,
+                                                   ref batchProducts,
+                                                   ref batchSkills);
                         }
 
                         if (newBlueprint.activities.reaction != null)
                         {
-                            InsertReordForActivity(bpActivityTypeTable,
+                            SetActivityInfoForType(bpActivityTypeTable,
                                                    bpActivityMatTable,
                                                    bpActivitySkillTable,
                                                    bpProductTable,
                                                    newBlueprint.activities.reaction,
                                                    "reaction",
-                                                   newBlueprint.blueprintTypeID);
+                                                   newBlueprint.blueprintTypeID,
+                                                   ref batchActivityTypes,
+                                                   ref batchMaterials,
+                                                   ref batchProducts,
+                                                   ref batchSkills);
                         }
 
                         if (newBlueprint.activities.invention != null)
                         {
-                            InsertReordForActivity(bpActivityTypeTable,
+                            SetActivityInfoForType(bpActivityTypeTable,
                                                    bpActivityMatTable,
                                                    bpActivitySkillTable,
                                                    bpProductTable,
                                                    newBlueprint.activities.invention,
                                                    "invention",
-                                                   newBlueprint.blueprintTypeID);
+                                                   newBlueprint.blueprintTypeID,
+                                                   ref batchActivityTypes,
+                                                   ref batchMaterials,
+                                                   ref batchProducts,
+                                                   ref batchSkills);
                         }
 
                         if (newBlueprint.activities.research_material != null)
                         {
-                            InsertReordForActivity(bpActivityTypeTable,
+                            SetActivityInfoForType(bpActivityTypeTable,
                                                    bpActivityMatTable,
                                                    bpActivitySkillTable,
                                                    bpProductTable,
                                                    newBlueprint.activities.research_material,
                                                    "research_material",
-                                                   newBlueprint.blueprintTypeID);
+                                                   newBlueprint.blueprintTypeID,
+                                                   ref batchActivityTypes,
+                                                   ref batchMaterials,
+                                                   ref batchProducts,
+                                                   ref batchSkills);
                         }
 
                         if (newBlueprint.activities.research_time != null)
                         {
-                            InsertReordForActivity(bpActivityTypeTable,
+                            SetActivityInfoForType(bpActivityTypeTable,
                                                    bpActivityMatTable,
                                                    bpActivitySkillTable,
                                                    bpProductTable,
                                                    newBlueprint.activities.research_time,
                                                    "research_time",
-                                                   newBlueprint.blueprintTypeID);
+                                                   newBlueprint.blueprintTypeID,
+                                                   ref batchActivityTypes,
+                                                   ref batchMaterials,
+                                                   ref batchProducts,
+                                                   ref batchSkills);
                         }
                         count++;
                     }
+                    Utility.InsertBatchRecord<Blueprints>(blueprintsTable, batchBlureprints);
+                    Utility.InsertBatchRecord<BlueprintActivityType>(bpActivityTypeTable, batchActivityTypes);
+                    Utility.InsertBatchRecord<BlueprintActivityMaterial>(bpActivityMatTable, batchMaterials);
+                    Utility.InsertBatchRecord<BlueprintProduct>(bpProductTable, batchProducts);
+                    Utility.InsertBatchRecord<BlueprintSkill>(bpActivitySkillTable, batchSkills);
                 }
             }
             catch (Exception ex)
@@ -465,20 +500,24 @@ namespace EveStaticDataExportConverter
             return count;
         }
 
-        private void InsertReordForActivity(TableInfo activityTableInfo,
+        private void SetActivityInfoForType(TableInfo activityTableInfo,
                                             TableInfo materialTableInfo,
                                             TableInfo skillTableInfo,
                                             TableInfo productTableInfo,
                                             BlueprintActivityType activityType,
                                             string activityName,
-                                            int blueprintTypeId)
+                                            int blueprintTypeId,
+                                            ref List<BlueprintActivityType> batchActivityTypes,
+                                            ref List<BlueprintActivityMaterial> batchMaterials,
+                                            ref List<BlueprintProduct> batchProducts,
+                                            ref List<BlueprintSkill> batchSkills)
         {
             if (activityType != null)
             {
                 activityType.blueprintTypeID = blueprintTypeId;
                 activityType.activityName = activityName;
 
-                DatabaseManager.InsertRecordForType(activityTableInfo, activityType);
+                Utility.AddRecordToBatch<BlueprintActivityType>(activityTableInfo, ref batchActivityTypes, activityType);
 
                 if (activityType.materials?.Count > 0)
                 {
@@ -486,7 +525,7 @@ namespace EveStaticDataExportConverter
                     {
                         activityMaterial.blueprintTypeID = blueprintTypeId;
                         activityMaterial.activityName = activityName;
-                        DatabaseManager.InsertRecordForType(materialTableInfo, activityMaterial);
+                        Utility.AddRecordToBatch<BlueprintActivityMaterial>(materialTableInfo, ref batchMaterials, activityMaterial);
                     }
                 }
 
@@ -496,7 +535,7 @@ namespace EveStaticDataExportConverter
                     {
                         product.blueprintTypeID = blueprintTypeId;
                         product.activityName = activityName;
-                        DatabaseManager.InsertRecordForType(productTableInfo, product);
+                        Utility.AddRecordToBatch<BlueprintProduct>(productTableInfo, ref batchProducts, product);
                     }
                 }
 
@@ -506,7 +545,7 @@ namespace EveStaticDataExportConverter
                     {
                         skill.parentTypeId = blueprintTypeId;
                         skill.activityName = activityName;
-                        DatabaseManager.InsertRecordForType(skillTableInfo, skill);
+                        Utility.AddRecordToBatch<BlueprintSkill>(skillTableInfo, ref batchSkills, skill);
                     }
                 }
             }
@@ -2002,6 +2041,7 @@ namespace EveStaticDataExportConverter
             int count = 0;
             PlanetResource newPlanetResource = null;
             JObject jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            List<PlanetResource> batchPlanetResources = new List<PlanetResource>();
 
             try
             {
@@ -2011,10 +2051,11 @@ namespace EveStaticDataExportConverter
                     {
                         newPlanetResource = Newtonsoft.Json.JsonConvert.DeserializeObject<PlanetResource>(token.First.ToString());
                         newPlanetResource.planetID = Convert.ToInt64(token.Path);
-                        DatabaseManager.InsertRecordForType<PlanetResource>(planetResourcesTable, newPlanetResource);
+                        Utility.AddRecordToBatch<PlanetResource>(planetResourcesTable, ref batchPlanetResources, newPlanetResource);
 
                         count++;
                     }
+                    Utility.InsertBatchRecord<PlanetResource>(planetResourcesTable, batchPlanetResources);
                 }
             }
             catch (Exception ex)
@@ -2480,6 +2521,8 @@ namespace EveStaticDataExportConverter
             Skin newSkin = null;
             SkinType newSkinType = null;
             JObject jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            List<Skin> batchSkins = new List<Skin>();
+            List<SkinType> batchSkinTypes = new List<SkinType>();
 
             try
             {
@@ -2488,18 +2531,21 @@ namespace EveStaticDataExportConverter
                     foreach (JToken token in jObject.Children())
                     {
                         newSkin = Newtonsoft.Json.JsonConvert.DeserializeObject<Skin>(token.First.ToString());
-                        DatabaseManager.InsertRecordForType<Skin>(skinLicenseTable, newSkin);
+                        Utility.AddRecordToBatch<Skin>(skinLicenseTable, ref batchSkins, newSkin);
 
                         if (newSkin.types?.Count > 0)
                         {
                             foreach (int type in newSkin.types)
                             {
                                 newSkinType = new SkinType() { skinID = newSkin.skinID, typeID = type };
-                                DatabaseManager.InsertRecordForType<SkinType>(skinTypeTable, newSkinType);
+                                Utility.AddRecordToBatch<SkinType>(skinTypeTable, ref batchSkinTypes, newSkinType);
                             }
                         }
                         count++;
                     }
+
+                    Utility.InsertBatchRecord<Skin>(skinLicenseTable, batchSkins);
+                    Utility.InsertBatchRecord<SkinType>(skinTypeTable, batchSkinTypes);
                 }
             }
             catch (Exception ex)
@@ -2973,7 +3019,7 @@ namespace EveStaticDataExportConverter
                 Console.WriteLine("Converting Type Dogmas");
                 count = ConvertTypeDogmasFromJSON(json,
                                                     typeDogmaAttributeTable,
-                                                    typeDogmaEffectTable).Result;
+                                                    typeDogmaEffectTable);
 
             }
             catch (Exception ex)
@@ -2987,27 +3033,49 @@ namespace EveStaticDataExportConverter
             return success;
         }
 
-        private async Task<int> ConvertTypeDogmasFromJSON(string json,
+        private int ConvertTypeDogmasFromJSON(string json,
                                             TableInfo typeDogmaAttributeTable,
                                             TableInfo typeDogmaEffectTable)
         {
             int count = 0;
             JObject jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            TypeDogma newTypeDogma = null;
+            List<TypeDogmaAttribute> batchAttributes = new List<TypeDogmaAttribute>();
+            List<TypeDogmaEffect> batchEffects = new List<TypeDogmaEffect>();
 
             try
             {
                 if (jObject != null)
                 {
                     List<JToken> allTokens = jObject.Children().ToList();
-                    List<Task> tasks = new List<Task>();
 
                     foreach (JToken token in allTokens)
                     {
-                        tasks.Add(ThreadedConvertTypeDogmaFromJson(token, typeDogmaAttributeTable, typeDogmaEffectTable));
+                        newTypeDogma = Newtonsoft.Json.JsonConvert.DeserializeObject<TypeDogma>(token.First.ToString());
+                        newTypeDogma.typeID = Convert.ToInt32(token.Path);
+
+
+                        if (newTypeDogma.dogmaAttributes?.Count > 0)
+                        {
+                            foreach (TypeDogmaAttribute typeDogmaAttribute in newTypeDogma.dogmaAttributes)
+                            {
+                                typeDogmaAttribute.typeID = newTypeDogma.typeID;
+                                Utility.AddRecordToBatch<TypeDogmaAttribute>(typeDogmaAttributeTable, ref batchAttributes, typeDogmaAttribute);
+                            }
+                        }
+
+                        if (newTypeDogma.dogmaEffects?.Count > 0)
+                        {
+                            foreach (TypeDogmaEffect typeDogmaEffect in newTypeDogma.dogmaEffects)
+                            {
+                                typeDogmaEffect.typeID = newTypeDogma.typeID;
+                                Utility.AddRecordToBatch<TypeDogmaEffect>(typeDogmaEffectTable, ref batchEffects, typeDogmaEffect);
+                            }
+                        }
                         count++;
                     }
-
-                    await Task.WhenAll(tasks);
+                    Utility.InsertBatchRecord<TypeDogmaAttribute>(typeDogmaAttributeTable, batchAttributes);
+                    Utility.InsertBatchRecord<TypeDogmaEffect>(typeDogmaEffectTable, batchEffects);
                 }
             }
             catch (Exception ex)
@@ -3016,35 +3084,6 @@ namespace EveStaticDataExportConverter
             }
 
             return count;
-        }
-
-        private Task ThreadedConvertTypeDogmaFromJson(JToken token,
-                                            TableInfo typeDogmaAttributeTable,
-                                            TableInfo typeDogmaEffectTable)
-        {
-            TypeDogma newTypeDogma = null;
-            newTypeDogma = Newtonsoft.Json.JsonConvert.DeserializeObject<TypeDogma>(token.First.ToString());
-            newTypeDogma.typeID = Convert.ToInt32(token.Path);
-
-
-            if (newTypeDogma.dogmaAttributes?.Count > 0)
-            {
-                foreach (TypeDogmaAttribute typeDogmaAttribute in newTypeDogma.dogmaAttributes)
-                {
-                    typeDogmaAttribute.typeID = newTypeDogma.typeID;
-                    DatabaseManager.InsertRecordForType<TypeDogmaAttribute>(typeDogmaAttributeTable, typeDogmaAttribute);
-                }
-            }
-
-            if (newTypeDogma.dogmaEffects?.Count > 0)
-            {
-                foreach (TypeDogmaEffect typeDogmaEffect in newTypeDogma.dogmaEffects)
-                {
-                    typeDogmaEffect.typeID = newTypeDogma.typeID;
-                    DatabaseManager.InsertRecordForType<TypeDogmaEffect>(typeDogmaEffectTable, typeDogmaEffect);
-                }
-            }
-            return Task.CompletedTask;
         }
         #endregion
 
@@ -3083,8 +3122,9 @@ namespace EveStaticDataExportConverter
                                             TableInfo typeMaterialTable)
         {
             int count = 0;
-            TypeMaterial newTypeMaterial = null;
             JObject jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            TypeMaterial newTypeMaterial = null;
+            List<TypeMaterial> batchTypeMaterials = new List<TypeMaterial>();
 
             try
             {
@@ -3100,11 +3140,12 @@ namespace EveStaticDataExportConverter
                             foreach (TypeMaterial material in newTypeMaterial.materials)
                             {
                                 material.typeID = Convert.ToInt32(newTypeMaterial.typeID);
-                                DatabaseManager.InsertRecordForType<TypeMaterial>(typeMaterialTable, material);
+                                Utility.AddRecordToBatch<TypeMaterial>(typeMaterialTable, ref batchTypeMaterials, material);
                             }
                         }
                         count++;
                     }
+                    Utility.InsertBatchRecord<TypeMaterial>(typeMaterialTable, batchTypeMaterials);
                 }
             }
             catch (Exception ex)
@@ -3171,7 +3212,7 @@ namespace EveStaticDataExportConverter
                                                 "EveTypeMiscBonuses",
                                                 "EveTypeRoleBonuses",
                                                 "EveTypeBonuses",
-                                                "EveTypeBonusText").Result;
+                                                "EveTypeBonusText");
 
             }
             catch (Exception ex)
@@ -3185,7 +3226,7 @@ namespace EveStaticDataExportConverter
             return success;
         }
 
-        private async Task<int> ConvertTypesFromJSON(string json,
+        private int ConvertTypesFromJSON(string json,
                                             TableInfo eveTypeTable,
                                             TableInfo langDscrTable,
                                             TableInfo eveTypeMasteryTable,
@@ -3199,151 +3240,147 @@ namespace EveStaticDataExportConverter
         {
             int count = 0;
             JObject jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            EveType newType = null;
+
+            List<EveType> batchTypes = new List<EveType>();
+            List<LanguageDescription> batchTypeDscr = new List<LanguageDescription>();
+            List<LanguageDescription> batchTypeName = new List<LanguageDescription>();
+            List<EveTypeBonus> batchEveTypeMiscBonus = new List<EveTypeBonus>();
+            List<LanguageDescription> batchEveTypeMiscBonusText = new List<LanguageDescription>();
+            List<EveTypeBonus> batchEveTypeRoleBonus = new List<EveTypeBonus>();
+            List<LanguageDescription> batchEveTypeRoleBonusText = new List<LanguageDescription>();
+            List<EveTypeBonus> batchEveTypeTraitBonus = new List<EveTypeBonus>();
+            List<LanguageDescription> batchEveTypeTraitBonusText = new List<LanguageDescription>();
+            List<EveTypeMastery> batchMasteries = new List<EveTypeMastery>();
 
             try
             {
                 if (jObject != null)
                 {
                     List<JToken> allTokens = jObject.Children().ToList();
-                    List<Task> tasks = new List<Task>();
 
                     foreach (JToken token in allTokens)
                     {
-                        tasks.Add(ThreadedConvertTypesFromJson(json,
-                                            token,
-                                            eveTypeTable,
-                                            langDscrTable,
-                                            eveTypeMasteryTable,
-                                            eveTypeBonusTable,
-                                            eveTypeDscrTableName,
-                                            eveTypeNameTableName,
-                                            miscBonusTableName,
-                                            roleBonusTableName,
-                                            eveTypeBonusTableName,
-                                            eveTypeBonusTextTableName));
+                        newType = Newtonsoft.Json.JsonConvert.DeserializeObject<EveType>(token.First.ToString());
+                        newType.typeID = Convert.ToInt32(token.Path);
+                        Utility.AddRecordToBatch<EveType>(eveTypeTable, ref batchTypes, newType);
+
+                        if (newType.description != null)
+                        {
+                            newType.description.parentTypeId = newType.typeID;
+                            langDscrTable.Name = eveTypeDscrTableName;
+                            Utility.AddRecordToBatch<LanguageDescription>(langDscrTable, ref batchTypeDscr, newType.description);
+                        }
+
+                        if (newType.name != null)
+                        {
+                            newType.name.parentTypeId = newType.typeID;
+                            langDscrTable.Name = eveTypeNameTableName;
+                            Utility.AddRecordToBatch<LanguageDescription>(langDscrTable, ref batchTypeName, newType.name);
+                        }
+
+                        if (newType.traits != null)
+                        {
+                            if (newType.traits.miscBonuses?.Count > 0)
+                            {
+                                int traitCount = 0;
+                                foreach (EveTypeBonus bonus in newType.traits.miscBonuses)
+                                {
+                                    traitCount += 1;
+                                    bonus.typeID = newType.typeID;
+                                    bonus.bonusedTypeID = traitCount;
+                                    eveTypeBonusTable.Name = miscBonusTableName;
+                                    Utility.AddRecordToBatch<EveTypeBonus>(eveTypeBonusTable, ref batchEveTypeMiscBonus, bonus);
+                                    
+
+                                    if (bonus.bonusText != null)
+                                    {
+                                        bonus.bonusText.parentTypeId = newType.typeID;
+                                        bonus.bonusText.parentTypeId2 = bonus.bonusedTypeID;
+                                        bonus.bonusText.parentTypeCategory = "Misc Bonus";
+                                        langDscrTable.Name = eveTypeBonusTextTableName;
+                                        Utility.AddRecordToBatch<LanguageDescription>(langDscrTable, ref batchEveTypeMiscBonusText, bonus.bonusText);
+                                    }
+                                }
+                            }
+                            if (newType.traits.roleBonuses?.Count > 0)
+                            {
+                                int bonusCount = 0;
+                                foreach (EveTypeBonus bonus in newType.traits.roleBonuses)
+                                {
+                                    bonusCount += 1;
+                                    bonus.typeID = newType.typeID;
+                                    bonus.bonusedTypeID = bonusCount;
+                                    eveTypeBonusTable.Name = roleBonusTableName;
+                                    Utility.AddRecordToBatch<EveTypeBonus>(eveTypeBonusTable, ref batchEveTypeRoleBonus, bonus);
+
+                                    if (bonus.bonusText != null)
+                                    {
+                                        bonus.bonusText.parentTypeId = newType.typeID;
+                                        bonus.bonusText.parentTypeId2 = bonus.bonusedTypeID;
+                                        bonus.bonusText.parentTypeCategory = "Role Bonus";
+                                        langDscrTable.Name = eveTypeBonusTextTableName;
+                                        Utility.AddRecordToBatch<LanguageDescription>(langDscrTable, ref batchEveTypeRoleBonusText, bonus.bonusText);
+                                    }
+                                }
+                            }
+                            if (newType.traits.types?.Count > 0)
+                            {
+                                foreach (EveTypeBonus bonus in newType.traits.types)
+                                {
+                                    bonus.typeID = newType.typeID;
+                                    eveTypeBonusTable.Name = eveTypeBonusTableName;
+                                    Utility.AddRecordToBatch<EveTypeBonus>(eveTypeBonusTable, ref batchEveTypeTraitBonus, bonus);
+
+                                    if (bonus.bonusText != null)
+                                    {
+                                        bonus.bonusText.parentTypeId = newType.typeID;
+                                        bonus.bonusText.parentTypeId2 = bonus.bonusedTypeID;
+                                        bonus.bonusText.parentTypeCategory = "Type Bonus";
+                                        langDscrTable.Name = eveTypeBonusTextTableName;
+                                        Utility.AddRecordToBatch<LanguageDescription>(langDscrTable, ref batchEveTypeTraitBonusText, bonus.bonusText);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (newType.masteries?.Count > 0)
+                        {
+                            foreach (EveTypeMastery eveTypeMastery in newType.masteries)
+                            {
+                                eveTypeMastery.typeID = newType.typeID;
+                                Utility.AddRecordToBatch<EveTypeMastery>(eveTypeMasteryTable, ref batchMasteries, eveTypeMastery);
+                            }
+                        }
                         count++;
                     }
 
-                    await Task.WhenAll(tasks);
+                    Utility.InsertBatchRecord<EveType>(eveTypeTable, batchTypes);
+                    langDscrTable.Name = eveTypeDscrTableName;
+                    Utility.InsertBatchRecord<LanguageDescription>(langDscrTable, batchTypeDscr);
+                    langDscrTable.Name = eveTypeNameTableName;
+                    Utility.InsertBatchRecord<LanguageDescription>(langDscrTable, batchTypeName);
+                    eveTypeBonusTable.Name = miscBonusTableName;
+                    Utility.InsertBatchRecord<EveTypeBonus>(eveTypeBonusTable, batchEveTypeMiscBonus);
+                    langDscrTable.Name = eveTypeBonusTextTableName;
+                    Utility.InsertBatchRecord<LanguageDescription>(langDscrTable, batchEveTypeMiscBonusText);
+                    eveTypeBonusTable.Name = roleBonusTableName;
+                    Utility.InsertBatchRecord<EveTypeBonus>(eveTypeBonusTable, batchEveTypeRoleBonus);
+                    langDscrTable.Name = eveTypeBonusTextTableName;
+                    Utility.InsertBatchRecord<LanguageDescription>(langDscrTable, batchEveTypeRoleBonusText);
+                    eveTypeBonusTable.Name = eveTypeBonusTableName;
+                    Utility.InsertBatchRecord<EveTypeBonus>(eveTypeBonusTable, batchEveTypeTraitBonus);
+                    langDscrTable.Name = eveTypeBonusTextTableName;
+                    Utility.InsertBatchRecord<LanguageDescription>(langDscrTable, batchEveTypeTraitBonusText);
+                    Utility.InsertBatchRecord<EveTypeMastery>(eveTypeMasteryTable, batchMasteries);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error ocurred in ConvertTypeDogmasFromJSON");
+                Console.WriteLine("Error ocurred in ConvertTypesFromJSON");
             }
 
             return count;
-        }
-
-        private Task ThreadedConvertTypesFromJson(string json,
-                                            JToken token,
-                                            TableInfo eveTypeTable,
-                                            TableInfo langDscrTable,
-                                            TableInfo eveTypeMasteryTable,
-                                            TableInfo eveTypeBonusTable,
-                                            string eveTypeDscrTableName,
-                                            string eveTypeNameTableName,
-                                            string miscBonusTableName,
-                                            string roleBonusTableName,
-                                            string eveTypeBonusTableName,
-                                            string eveTypeBonusTextTableName)
-        {
-            EveType newTypeDogma = null;
-            newTypeDogma = Newtonsoft.Json.JsonConvert.DeserializeObject<EveType>(token.First.ToString());
-            newTypeDogma.typeID = Convert.ToInt32(token.Path);
-            DatabaseManager.InsertRecordForType<EveType>(eveTypeTable, newTypeDogma);
-
-            if (newTypeDogma.description != null)
-            {
-                newTypeDogma.description.parentTypeId = newTypeDogma.typeID;
-                langDscrTable.Name = eveTypeDscrTableName;
-                DatabaseManager.InsertRecordForType<LanguageDescription>(langDscrTable, newTypeDogma.description);
-            }
-
-            if (newTypeDogma.name != null)
-            {
-                newTypeDogma.name.parentTypeId = newTypeDogma.typeID;
-                langDscrTable.Name = eveTypeNameTableName;
-                DatabaseManager.InsertRecordForType<LanguageDescription>(langDscrTable, newTypeDogma.name);
-            }
-
-            if (newTypeDogma.traits != null)
-            {
-                if (newTypeDogma.traits.miscBonuses?.Count > 0)
-                {
-                    int count = 0;
-                    foreach (EveTypeBonus bonus in newTypeDogma.traits.miscBonuses)
-                    {
-                        count += 1;
-                        bonus.typeID = newTypeDogma.typeID;
-                        bonus.bonusedTypeID = count;
-                        eveTypeBonusTable.Name = miscBonusTableName;
-                        DatabaseManager.InsertRecordForType<EveTypeBonus>(eveTypeBonusTable, bonus);
-
-                        if (bonus.bonusText != null)
-                        {
-                            bonus.bonusText.parentTypeId = newTypeDogma.typeID;
-                            bonus.bonusText.parentTypeId2 = bonus.bonusedTypeID;
-                            bonus.bonusText.parentTypeCategory = "Misc Bonus";
-                            langDscrTable.Name = eveTypeBonusTextTableName;
-                            DatabaseManager.InsertRecordForType<LanguageDescription>(langDscrTable, bonus.bonusText);
-
-                        }
-                    }
-                }
-                if (newTypeDogma.traits.roleBonuses?.Count > 0)
-                {
-                    int count = 0;
-                    foreach (EveTypeBonus bonus in newTypeDogma.traits.roleBonuses)
-                    {
-                        count += 1;
-                        bonus.typeID = newTypeDogma.typeID;
-                        bonus.bonusedTypeID = count;
-                        eveTypeBonusTable.Name = roleBonusTableName;
-                        DatabaseManager.InsertRecordForType<EveTypeBonus>(eveTypeBonusTable, bonus);
-
-                        if (bonus.bonusText != null)
-                        {
-                            bonus.bonusText.parentTypeId = newTypeDogma.typeID;
-                            bonus.bonusText.parentTypeId2 = bonus.bonusedTypeID;
-                            bonus.bonusText.parentTypeCategory = "Role Bonus";
-                            langDscrTable.Name = eveTypeBonusTextTableName;
-                            DatabaseManager.InsertRecordForType<LanguageDescription>(langDscrTable, bonus.bonusText);
-
-                        }
-                    }
-                }
-                if (newTypeDogma.traits.types?.Count > 0)
-                {
-                    foreach (EveTypeBonus bonus in newTypeDogma.traits.types)
-                    {
-                        bonus.typeID = newTypeDogma.typeID;
-                        eveTypeBonusTable.Name = eveTypeBonusTableName;
-                        DatabaseManager.InsertRecordForType<EveTypeBonus>(eveTypeBonusTable, bonus);
-
-                        if (bonus.bonusText != null)
-                        {
-                            bonus.bonusText.parentTypeId = newTypeDogma.typeID;
-                            bonus.bonusText.parentTypeId2 = bonus.bonusedTypeID;
-                            bonus.bonusText.parentTypeCategory = "Type Bonus";
-                            langDscrTable.Name = eveTypeBonusTextTableName;
-                            DatabaseManager.InsertRecordForType<LanguageDescription>(langDscrTable, bonus.bonusText);
-
-                        }
-                    }
-                }
-            }
-
-            if (newTypeDogma.masteries?.Count > 0)
-            {
-                foreach (EveTypeMastery eveTypeMastery in newTypeDogma.masteries)
-                {
-                    eveTypeMastery.typeID = newTypeDogma.typeID;
-                    DatabaseManager.InsertRecordForType<EveTypeMastery>(eveTypeMasteryTable, eveTypeMastery);
-                }
-            }
-
-            return Task.CompletedTask;
         }
         #endregion
     }

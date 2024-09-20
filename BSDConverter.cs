@@ -4,9 +4,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EveStaticDataExportConverter.Classes.BSD;
 using EveStaticDataExportConverter.Classes.FSD.Supporting_Classes;
 
@@ -14,7 +11,7 @@ namespace EveStaticDataExportConverter
 {
     internal class BSDConverter
     {
-        string bsdPath = "{path to json conversion}\\json_sde\\bsd";
+        string bsdPath = "C:\\Users\\mrphi\\source\\repos\\EveStaticDataExportConverter\\EveOnline_StaticDataExport_Converter\\json_sde\\bsd";
 
         public bool ConvertBSD()
         {
@@ -64,7 +61,6 @@ namespace EveStaticDataExportConverter
         {
             int count = 0;
             List<InvFlag> invFlags = Newtonsoft.Json.JsonConvert.DeserializeObject<List<InvFlag>>(json);
-
             if (invFlags != null)
             {
                 foreach (InvFlag flag in invFlags)
@@ -94,7 +90,7 @@ namespace EveStaticDataExportConverter
                 DatabaseManager.CreateTable(invItemTable);
 
                 Console.WriteLine("Converting Inv Items");
-                count = ConvertInvItemsFromJSON(json, invItemTable).Result;
+                count = ConvertInvItemsFromJSON(json, invItemTable);
 
             }
             catch (Exception ex)
@@ -107,12 +103,13 @@ namespace EveStaticDataExportConverter
             Utility.LogElapsedTime(sw, "Converting " + count.ToString() + " Inv Items");
             return success;
         }
-        private async Task<int> ConvertInvItemsFromJSON(string json,
+        private int ConvertInvItemsFromJSON(string json,
                                             TableInfo invItemsTable)
         {
             int count = 0;
             JArray jArray = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
-
+            InvItems newInvItem = null;
+            List<InvItems> batchInvItems = new List<InvItems>();
             try
             {
                 if (jArray != null)
@@ -121,12 +118,14 @@ namespace EveStaticDataExportConverter
 
                     foreach (JObject jObject in jArray)
                     {
-                        tasks.Add(ThreadedConvertInvItemsFromJSON(jObject,
-                                                                invItemsTable));
+                        newInvItem = Newtonsoft.Json.JsonConvert.DeserializeObject<InvItems>(jObject.ToString());
+                        Utility.AddRecordToBatch<InvItems>(invItemsTable, ref batchInvItems, newInvItem);
                         count++;
                     }
-
-                    await Task.WhenAll(tasks);
+                    if (batchInvItems.Count > 0)
+                    {
+                        Utility.InsertBatchRecord<InvItems>(invItemsTable, batchInvItems);
+                    }
                 }
             }
             catch (Exception ex)
@@ -135,16 +134,6 @@ namespace EveStaticDataExportConverter
             }
 
             return count;
-        }
-
-        private Task ThreadedConvertInvItemsFromJSON(JObject jObject,
-                                            TableInfo eveTypeTable)
-        {
-            InvItems newInvItem = null;
-            newInvItem = Newtonsoft.Json.JsonConvert.DeserializeObject<InvItems>(jObject.ToString());
-            DatabaseManager.InsertRecordForType<InvItems>(eveTypeTable, newInvItem);
-
-            return Task.CompletedTask;
         }
         #endregion
 
@@ -182,6 +171,8 @@ namespace EveStaticDataExportConverter
         {
             int count = 0;
             JArray jArray = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            InvName newInvName = null;
+            List<InvName> batchInvNames = new List<InvName>();
             try
             {
                 if (jArray != null)
@@ -191,9 +182,13 @@ namespace EveStaticDataExportConverter
                     Console.WriteLine("Converting Inv Names");
                     foreach (JObject jObject in jArray)
                     {
-                        tasks.Add(ThreadedConvertInvNamesFromJSON(jObject,
-                                                                invNameTable));
+                        newInvName = Newtonsoft.Json.JsonConvert.DeserializeObject<InvName>(jObject.ToString());
+                        Utility.AddRecordToBatch<InvName>(invNameTable, ref batchInvNames, newInvName);
                         count++;
+                    }
+                    if (batchInvNames.Count > 0)
+                    {
+                        Utility.InsertBatchRecord<InvName>(invNameTable, batchInvNames);
                     }
 
                     await Task.WhenAll(tasks);
@@ -204,16 +199,6 @@ namespace EveStaticDataExportConverter
                 Console.WriteLine("Error ocurred in ConvertInvNamesFromJSON");
             }
             return count;
-        }
-
-        private Task ThreadedConvertInvNamesFromJSON(JObject jObject,
-                                            TableInfo invNameTable)
-        {
-            InvName newInvName = null;
-            newInvName = Newtonsoft.Json.JsonConvert.DeserializeObject<InvName>(jObject.ToString());
-            DatabaseManager.InsertRecordForType<InvName>(invNameTable, newInvName);
-
-            return Task.CompletedTask;
         }
         #endregion
 
@@ -234,7 +219,7 @@ namespace EveStaticDataExportConverter
                 DatabaseManager.CreateTable(invPositionTable);
 
                 Console.WriteLine("Converting Inv Positions");
-                count = ConvertInvPositionsFromJSON(json, invPositionTable).Result;
+                count = ConvertInvPositionsFromJSON(json, invPositionTable);
 
             }
             catch (Exception ex)
@@ -247,26 +232,28 @@ namespace EveStaticDataExportConverter
             Utility.LogElapsedTime(sw, "Converting " + count.ToString() + " Inv Positions");
             return success;
         }
-        private async Task<int> ConvertInvPositionsFromJSON(string json,
+        private int ConvertInvPositionsFromJSON(string json,
                                             TableInfo invPositionTable)
         {
             int count = 0;
             JArray jArray = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            InvPosition newInvName = null;
+            List<InvPosition> batchInvPositions = new List<InvPosition>();
 
             try
             {
                 if (jArray != null)
                 {
-                    List<Task> tasks = new List<Task>();
-
                     foreach (JObject jObject in jArray)
                     {
-                        tasks.Add(ThreadedConvertInvPositionsFromJSON(jObject,
-                                                                invPositionTable));
+                        newInvName = Newtonsoft.Json.JsonConvert.DeserializeObject<InvPosition>(jObject.ToString());
+                        Utility.AddRecordToBatch<InvPosition>(invPositionTable, ref batchInvPositions, newInvName);
                         count++;
                     }
-
-                    await Task.WhenAll(tasks);
+                    if (batchInvPositions.Count > 0)
+                    {
+                        Utility.InsertBatchRecord<InvPosition>(invPositionTable, batchInvPositions);
+                    }
                 }
             }
             catch (Exception ex)
@@ -275,16 +262,6 @@ namespace EveStaticDataExportConverter
             }
 
             return count;
-        }
-
-        private Task ThreadedConvertInvPositionsFromJSON(JObject jObject,
-                                            TableInfo invPositionTable)
-        {
-            InvPosition newInvName = null;
-            newInvName = Newtonsoft.Json.JsonConvert.DeserializeObject<InvPosition>(jObject.ToString());
-            DatabaseManager.InsertRecordForType<InvPosition>(invPositionTable, newInvName);
-
-            return Task.CompletedTask;
         }
         #endregion
 
@@ -305,7 +282,7 @@ namespace EveStaticDataExportConverter
                 DatabaseManager.CreateTable(invUniqueNameTable);
 
                 Console.WriteLine("Converting Inv UniqueNames");
-                count = ConvertInvUniqueNamesFromJSON(json, invUniqueNameTable).Result;
+                count = ConvertInvUniqueNamesFromJSON(json, invUniqueNameTable);
 
             }
             catch (Exception ex)
@@ -318,26 +295,28 @@ namespace EveStaticDataExportConverter
             Utility.LogElapsedTime(sw, "Converting " + count.ToString() + " Inv UniqueNames");
             return success;
         }
-        private async Task<int> ConvertInvUniqueNamesFromJSON(string json,
+        private int ConvertInvUniqueNamesFromJSON(string json,
                                             TableInfo invUniqueNameTable)
         {
             int count = 0;
             JArray jArray = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            InvUniqueName ewInvUniqueName = null;
+            List<InvUniqueName> batchUniqueNames = new List<InvUniqueName>();
 
             try
             {
                 if (jArray != null)
                 {
-                    List<Task> tasks = new List<Task>();
-
                     foreach (JObject jObject in jArray)
                     {
-                        tasks.Add(ThreadedConvertInvUniqueNamesFromJSON(jObject,
-                                                                invUniqueNameTable));
+                        ewInvUniqueName = Newtonsoft.Json.JsonConvert.DeserializeObject<InvUniqueName>(jObject.ToString());
+                        Utility.AddRecordToBatch<InvUniqueName>(invUniqueNameTable, ref batchUniqueNames, ewInvUniqueName);
                         count++;
                     }
-
-                    await Task.WhenAll(tasks);
+                    if (batchUniqueNames.Count > 0)
+                    {
+                        Utility.InsertBatchRecord<InvUniqueName>(invUniqueNameTable, batchUniqueNames);
+                    }
                 }
             }
             catch (Exception ex)
@@ -346,16 +325,6 @@ namespace EveStaticDataExportConverter
             }
 
             return count;
-        }
-
-        private Task ThreadedConvertInvUniqueNamesFromJSON(JObject jObject,
-                                            TableInfo invPositionTable)
-        {
-            InvUniqueName ewInvUniqueName = null;
-            ewInvUniqueName = Newtonsoft.Json.JsonConvert.DeserializeObject<InvUniqueName>(jObject.ToString());
-            DatabaseManager.InsertRecordForType<InvUniqueName>(invPositionTable, ewInvUniqueName);
-
-            return Task.CompletedTask;
         }
         #endregion
 
@@ -376,7 +345,7 @@ namespace EveStaticDataExportConverter
                 DatabaseManager.CreateTable(staStationTable);
 
                 Console.WriteLine("Converting Sta Stations");
-                count = ConvertStaStationsFromJSON(json, staStationTable).Result;
+                count = ConvertStaStationsFromJSON(json, staStationTable);
 
             }
             catch (Exception ex)
@@ -389,26 +358,28 @@ namespace EveStaticDataExportConverter
             Utility.LogElapsedTime(sw, "Converting " + count.ToString() + " Sta Stations");
             return success;
         }
-        private async Task<int> ConvertStaStationsFromJSON(string json,
+        private int ConvertStaStationsFromJSON(string json,
                                             TableInfo staStationTable)
         {
             int count = 0;
             JArray jArray = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+            StaStation newStaStation = null;
+            List<StaStation> batchStations = new List<StaStation>();
 
             try
             {
                 if (jArray != null)
                 {
-                    List<Task> tasks = new List<Task>();
-
                     foreach (JObject jObject in jArray)
                     {
-                        tasks.Add(ThreadedConvertStaStationsFromJSON(jObject,
-                                                                staStationTable));
+                        newStaStation = Newtonsoft.Json.JsonConvert.DeserializeObject<StaStation>(jObject.ToString());
+                        Utility.AddRecordToBatch(staStationTable, ref batchStations, newStaStation);
                         count++;
                     }
-
-                    await Task.WhenAll(tasks);
+                    if (batchStations.Count > 0)
+                    {
+                        Utility.InsertBatchRecord<StaStation>(staStationTable, batchStations);
+                    }
                 }
             }
             catch (Exception ex)
@@ -417,16 +388,6 @@ namespace EveStaticDataExportConverter
             }
 
             return count;
-        }
-
-        private Task ThreadedConvertStaStationsFromJSON(JObject jObject,
-                                            TableInfo staStationTable)
-        {
-            StaStation newStaStation = null;
-            newStaStation = Newtonsoft.Json.JsonConvert.DeserializeObject<StaStation>(jObject.ToString());
-            DatabaseManager.InsertRecordForType<StaStation>(staStationTable, newStaStation);
-
-            return Task.CompletedTask;
         }
         #endregion
     }

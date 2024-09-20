@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EveStaticDataExportConverter.Classes.Database;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,6 +19,31 @@ namespace EveStaticDataExportConverter
                                                     stopwatch.Elapsed.Milliseconds,
                                                     stopwatch.Elapsed.Hours);
             Console.WriteLine(formattedString);
+        }
+
+        public static void InsertBatchRecord<T>(TableInfo tableInfo, List<T> batch)
+        {
+            if (batch?.Count > 0)
+            {
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                stopwatch.Start();
+                DatabaseManager.InsertRecordsForListofTypes<T>(tableInfo, batch);
+                stopwatch.Stop();
+                batch.Clear();
+            }
+        }
+
+        public static void AddRecordToBatch<T>(TableInfo tableInfo, ref List<T> batchRecords, T recordToAdd)
+        {
+            if (batchRecords != null)
+            {
+                batchRecords.Add(recordToAdd);
+                if (batchRecords.Count >= 100)
+                {
+                    DatabaseManager.InsertRecordsForListofTypes<T>(tableInfo, batchRecords);
+                    batchRecords.Clear();
+                }
+            }
         }
     }
 }
