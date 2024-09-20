@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# Directories
+/sde
+/json_sde
+/bin
+/.vs
+/obj
