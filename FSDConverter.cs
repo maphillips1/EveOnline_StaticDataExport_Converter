@@ -19,7 +19,7 @@ namespace EveStaticDataExportConverter
 {
     internal class FSDConverter
     {
-        string fsdPath = "C:\\Users\\mrphi\\source\\repos\\EveStaticDataExportConverter\\json_sde\\fsd";
+        string fsdPath = "{path to json conversion}\\json_sde\\fsd";
 
         public bool ConvertFSD()
         {

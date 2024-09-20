@@ -14,7 +14,7 @@ namespace EveStaticDataExportConverter
 {
     internal class BSDConverter
     {
-        string bsdPath = "C:\\Users\\mrphi\\source\\repos\\EveStaticDataExportConverter\\json_sde\\bsd";
+        string bsdPath = "{path to json conversion}\\json_sde\\bsd";
 
         public bool ConvertBSD()
         {

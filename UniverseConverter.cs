@@ -15,7 +15,7 @@ namespace EveStaticDataExportConverter
 {
     internal class UniverseConverter
     {
-        string unversePath = "C:\\Users\\mrphi\\source\\repos\\EveStaticDataExportConverter\\json_sde\\universe";
+        string unversePath = "{path to json conversion}\\json_sde\\universe";
         TableInfo regionTableInfo;
         TableInfo constellationTableInfo;
         TableInfo solarSystemTableInfo;
