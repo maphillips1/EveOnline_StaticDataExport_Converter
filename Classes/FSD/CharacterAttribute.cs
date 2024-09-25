@@ -17,6 +17,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             nameID = new LanguageDescription();
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int characterAttributeID {  get; set; }
 
         [Attributes.SQLiteType("TEXT")]

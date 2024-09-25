@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class TypeMaterial
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int typeID { get; set; }
         [Attributes.SQLIgnore()]
         public List<TypeMaterial> materials { get; set; }

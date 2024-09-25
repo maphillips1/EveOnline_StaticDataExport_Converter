@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.BSD
     internal class InvItems
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long itemID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public int flagID {  get; set; }

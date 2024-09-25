@@ -10,6 +10,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class StationService
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int stationServiceID {  get; set; }
         [Attributes.SQLIgnore()]
         public LanguageDescription serviceNameID { get; set; }

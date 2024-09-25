@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             factions = new List<ContrabandType>();
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int contrabandTypeID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             nameID = new LanguageDescription();
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int bloodlinesID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

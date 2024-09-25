@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     internal class MoonStatistics
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long moonID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public decimal density { get; set; }

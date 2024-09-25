@@ -11,6 +11,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class PlanetSchematic
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int planetSchematicID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             this.name = new LanguageDescription();
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int categoryID {  get; set; }
 
         [Attributes.SQLIgnore()]

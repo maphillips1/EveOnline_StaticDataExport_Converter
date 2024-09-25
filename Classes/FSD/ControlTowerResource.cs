@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             this.resources = new List<ControlTowerResource>();
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int controlTowerResourceID {  get; set; }
 
         [Attributes.SQLIgnore()]

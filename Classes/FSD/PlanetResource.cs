@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class PlanetResource
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long planetID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public int cycle_minutes { get; set; }

@@ -10,6 +10,7 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
 
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long planetID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public int heightMap1 { get; set; }

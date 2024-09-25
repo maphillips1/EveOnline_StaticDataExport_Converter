@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             this.name = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int dogmaAttributeCategoryID { get; set; }
         [Attributes.SQLiteType("TEXT")]
         public string description { get; set; }

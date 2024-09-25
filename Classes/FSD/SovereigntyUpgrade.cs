@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class SovereigntyUpgrade
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int sovereigntyUpgradeID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

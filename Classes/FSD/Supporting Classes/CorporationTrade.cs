@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
     internal class CorporationTrade
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long npcCorporationID { get; set; }
         [Attributes.SQLiteType("INT")]
         public int corporationTradeID {  get; set; }

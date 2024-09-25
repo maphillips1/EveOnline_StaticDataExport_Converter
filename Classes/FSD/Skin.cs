@@ -13,6 +13,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             internalName = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int skinID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public bool allowCCPDevs { get; set; }

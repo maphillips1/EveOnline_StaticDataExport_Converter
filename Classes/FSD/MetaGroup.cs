@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             iconSuffix = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int metaGroupID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public int iconID { get; set; }

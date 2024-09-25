@@ -18,11 +18,16 @@ namespace EveStaticDataExportConverter.Classes.Universe
         }
 
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long regionID {  get; set; }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long constellationId { get; set; }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long solarSystemID { get; set; }
+        [Attributes.SQLiteType("INT")]
+        public long factionID { get; set; }
         [Attributes.SQLiteType("TEXT")]
         public string solarSystemName { get; set; }
         [Attributes.SQLiteType("INT")]

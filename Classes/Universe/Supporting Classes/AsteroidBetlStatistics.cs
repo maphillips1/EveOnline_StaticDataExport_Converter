@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     internal class AsteroidBetlStatistics
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long asteroidBeltID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public decimal density { get; set; }

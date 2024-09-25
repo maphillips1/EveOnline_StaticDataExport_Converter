@@ -9,9 +9,16 @@ namespace EveStaticDataExportConverter.Classes.BSD
     internal class StaStation
     {
         [Attributes.SQLiteType("INT")]
-        public long stationID {  get; set; }
+        [Attributes.SQLiteIndex()]
+        public long solarSystemID { get; set; }
         [Attributes.SQLiteType("INT")]
-        public long constellationID {  get; set; }
+        [Attributes.SQLiteIndex()]
+        public long constellationID { get; set; }
+        [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
+        public long stationID {  get; set; }
+        [Attributes.SQLiteType("TEXT")]
+        public string stationName { get; set; }
         [Attributes.SQLiteType("INT")]
         public long corporationID { get; set; }
         [Attributes.SQLiteType("INT")]
@@ -32,10 +39,6 @@ namespace EveStaticDataExportConverter.Classes.BSD
         public decimal reprocessingStationsTake {  get; set; }
         [Attributes.SQLiteType("INT")]
         public double security {  get; set; }
-        [Attributes.SQLiteType("INT")]
-        public long solarSystemID { get; set; }
-        [Attributes.SQLiteType("TEXT")]
-        public string stationName { get; set; }
         [Attributes.SQLiteType("INT")]
         public int stationTypeID { get; set; }
         [Attributes.SQLiteType("INT")]

@@ -12,6 +12,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     {
 
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long agentId { get; set; }
 
         [Attributes.SQLiteType("INT")]

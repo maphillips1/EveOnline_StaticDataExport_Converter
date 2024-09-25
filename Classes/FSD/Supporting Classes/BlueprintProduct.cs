@@ -12,6 +12,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
             this.activityName = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int blueprintTypeID {  get; set; }
 
         [Attributes.SQLiteType("TEXT")]
@@ -22,5 +23,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
 
         [Attributes.SQLiteType("INT")]
         public int quantity { get; set; }
+        [Attributes.SQLiteType("INT")]
+        public decimal probability { get; set; }
     }
 }

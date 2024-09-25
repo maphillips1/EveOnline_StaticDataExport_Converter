@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.Universe
     internal class Region
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long regionID {  get; set; }
         [Attributes.SQLiteType("TEXT")]
         public string regionName { get; set; }

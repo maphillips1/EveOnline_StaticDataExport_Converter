@@ -19,6 +19,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             skillTypes = new List<CertificateSkillType>();
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int certificateID {  get; set; }
 
         [Attributes.SQLiteType("TEXT")]

@@ -21,12 +21,15 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
             parentTypeCategory = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long parentTypeId { get; set; }
 
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long parentTypeId2 { get; set; }
 
         [Attributes.SQLiteType("TEXT")]
+        [Attributes.SQLiteIndex()]
         public string parentTypeCategory { get; set; }
 
         [Attributes.SQLiteType("TEXT")]

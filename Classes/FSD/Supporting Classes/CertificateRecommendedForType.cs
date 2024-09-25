@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
     internal class CertificateRecommendedForType
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int certificateID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public int recommendedForTypeID { get; set; }

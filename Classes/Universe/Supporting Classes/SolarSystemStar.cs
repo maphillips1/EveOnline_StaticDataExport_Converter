@@ -9,9 +9,11 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     internal class SolarSystemStar
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long solarSystemID {  get; set; }
         [Attributes.SQLiteType("INT")]
         [Newtonsoft.Json.JsonProperty("id")]
+        [Attributes.SQLiteIndex()]
         public int starID { get; set; }
         [Attributes.SQLiteType("INT")]
         public double radius { get; set; }

@@ -32,8 +32,10 @@ namespace EveStaticDataExportConverter
             TableInfo tableInfo = new TableInfo();
             tableInfo.Name = typeof(T).Name;
             tableInfo.columns = new List<string>();
+            tableInfo.indexColumns = new List<string>();
             string typeString = "";
             Classes.Attributes.SQLIgnore sqlIgnore;
+            Classes.Attributes.SQLiteIndex sQLiteIndex;
             foreach (System.Reflection.PropertyInfo property in typeof(T).GetProperties())
             {
                 sqlIgnore = property.GetCustomAttribute<Classes.Attributes.SQLIgnore>();
@@ -51,29 +53,16 @@ namespace EveStaticDataExportConverter
                     {
                         tableInfo.columns.Add(property.Name + " " + typeString);
                     }
+
+                    sQLiteIndex = property.GetCustomAttribute<Classes.Attributes.SQLiteIndex>();
+                    if (sQLiteIndex != null)
+                    {
+                        tableInfo.indexColumns.Add(property.Name);
+                    }
                 }
             }
 
             return tableInfo;
-        }
-
-        public static void CreateLanguageDescriptionTable(string tableName)
-        {
-            StringBuilder createCommand = new StringBuilder();
-            createCommand.Append("CREATE TABLE ");
-            createCommand.Append(tableName);
-            createCommand.Append(" (");
-            createCommand.Append("de VARCHAR(MAX), ");
-            createCommand.Append("en VARCHAR(MAX), ");
-            createCommand.Append("es VARCHAR(MAX), ");
-            createCommand.Append("fr VARCHAR(MAX), ");
-            createCommand.Append("ja VARCHAR(MAX), ");
-            createCommand.Append("ko VARCHAR(MAX), ");
-            createCommand.Append("ru VARCHAR(MAX), ");
-            createCommand.Append("zh VARCHAR(MAX) ");
-            createCommand.Append(")");
-
-            ExecuteCommand(createCommand.ToString());
         }
 
         public static void CreateTable(TableInfo tableInfo)
@@ -93,6 +82,33 @@ namespace EveStaticDataExportConverter
             createCommand.Append(")");
 
             ExecuteCommand(createCommand.ToString());
+
+            if (tableInfo.indexColumns.Count > 0)
+            {
+                CreateIndexForTable(tableInfo);
+            }
+        }
+
+        public static void CreateIndexForTable(TableInfo tableInfo)
+        {
+            StringBuilder indexCommand = new StringBuilder();
+            indexCommand.Append("Create INDEX ");
+            indexCommand.Append(tableInfo.Name + "_IX on " + tableInfo.Name);
+            indexCommand.Append(" (");
+
+            int columnCount = 0;
+            while (columnCount < tableInfo.indexColumns.Count)
+            {
+                indexCommand.Append(tableInfo.indexColumns[columnCount]);
+                if (columnCount < tableInfo.indexColumns.Count - 1)
+                {
+                    indexCommand.Append(", ");
+                }
+                columnCount++;
+            }
+
+            indexCommand.Append(")");
+            ExecuteCommand(indexCommand.ToString());
         }
 
         public static void InsertRecordForType<T>(TableInfo tableInfo, T record)

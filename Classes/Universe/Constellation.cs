@@ -9,8 +9,10 @@ namespace EveStaticDataExportConverter.Classes.Universe
     internal class Constellation
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long regionID {  get; set; }
 
+        [Attributes.SQLiteIndex()]
         [Attributes.SQLiteType("INT")]
         public long constellationID {  get; set; }
 

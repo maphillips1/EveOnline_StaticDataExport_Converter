@@ -10,5 +10,6 @@ namespace EveStaticDataExportConverter.Classes.Database
     {
         public string Name { get; set; }
         public List<string> columns { get; set; }
+        public List<string> indexColumns { get; set; }
     }
 }

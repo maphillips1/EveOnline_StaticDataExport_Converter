@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.BSD
             flagText = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int flagID {  get; set; }
         [Attributes.SQLiteType("TEXT")]
         public string flagName { get; set; }

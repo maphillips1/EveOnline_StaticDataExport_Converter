@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
     internal class EveTypeMastery
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int typeID { get; set; }
         [Attributes.SQLiteType("INT")]
         public int masteryID { get; set; }

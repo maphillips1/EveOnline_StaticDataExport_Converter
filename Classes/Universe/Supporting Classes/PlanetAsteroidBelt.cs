@@ -9,8 +9,10 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     internal class PlanetAsteroidBelt
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long planetID {  get; set; }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long asteroidBeltID { get; set; }
         [Attributes.SQLIgnore()]
         public List<double> position { get; set; }

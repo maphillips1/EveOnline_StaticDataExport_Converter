@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             iconFile = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int iconID {  get; set; }
         [Attributes.SQLiteType("TEXT")]
         public string description { get; set; }

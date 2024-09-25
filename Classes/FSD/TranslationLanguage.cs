@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class TranslationLanguage
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int transalationLanguageID { get; set; }
         [Attributes.SQLiteType("TEXT")]
         public string de {  get; set; }

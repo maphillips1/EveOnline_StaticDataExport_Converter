@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
 {
     internal class Faction
     {
+        [Attributes.SQLiteIndex()]
         [Attributes.SQLiteType("INT")]
         public long factionID { get; set; }
 

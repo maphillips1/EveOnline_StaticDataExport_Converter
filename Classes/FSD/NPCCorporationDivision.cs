@@ -15,6 +15,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             internalName = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int npcCorporationDivisionID {  get; set; }
         [Attributes.SQLiteType("TEXT")]
         public string description { get; set; }

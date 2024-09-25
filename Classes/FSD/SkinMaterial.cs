@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class SkinMaterial
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int skinMaterialID { get; set; }
         [Attributes.SQLiteType("INT")]
         public int displayNameID { get; set; }

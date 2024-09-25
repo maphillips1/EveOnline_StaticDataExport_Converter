@@ -13,6 +13,7 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
             spectralClass = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long starID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public double age { get; set; }

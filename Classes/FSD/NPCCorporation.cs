@@ -12,6 +12,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class NPCCorporation
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long npcCorporationID {  get; set; }
 
         [Attributes.SQLIgnore()]

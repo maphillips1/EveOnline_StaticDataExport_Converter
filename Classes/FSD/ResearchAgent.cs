@@ -10,6 +10,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class ResearchAgent
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int researchAgentID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

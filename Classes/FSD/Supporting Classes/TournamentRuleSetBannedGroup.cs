@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
     internal class TournamentRuleSetBannedGroup
     {
         [Attributes.SQLiteType("TEXT")]
+        [Attributes.SQLiteIndex()]
         public string ruleSetID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

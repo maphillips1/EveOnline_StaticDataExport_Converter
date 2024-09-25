@@ -17,6 +17,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             this.shortDescription = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int ancestryID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

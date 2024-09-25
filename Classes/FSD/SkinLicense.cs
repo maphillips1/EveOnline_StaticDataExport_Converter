@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class SkinLicense
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int skinLicenseID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public int duration { get; set; }

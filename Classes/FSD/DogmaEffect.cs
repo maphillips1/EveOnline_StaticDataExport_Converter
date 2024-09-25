@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
             guid = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int dogmaEffectID {  get; set; }
 
         [Attributes.SQLIgnore()]

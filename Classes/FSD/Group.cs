@@ -10,6 +10,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class EveGroup
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int groupID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

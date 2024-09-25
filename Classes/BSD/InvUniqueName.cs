@@ -13,6 +13,7 @@ namespace EveStaticDataExportConverter.Classes.BSD
             itemName = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long itemID { get; set; }
         [Attributes.SQLiteType("INT")]
         public int groupID {  get; set; }

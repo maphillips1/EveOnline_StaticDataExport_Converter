@@ -11,6 +11,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class Race
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int raceID {  get; set; }
 
         [Attributes.SQLIgnore()]

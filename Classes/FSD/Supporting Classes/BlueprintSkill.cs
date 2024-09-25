@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
     internal class BlueprintSkill
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int parentTypeId {  get; set; }
 
         [Attributes.SQLiteType("TEXT")]

@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     internal class MoonAttributes
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long moonID { get; set; }
         [Attributes.SQLiteType("INT")]
         public int heightMap1 { get; set; }

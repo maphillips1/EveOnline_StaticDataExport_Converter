@@ -9,6 +9,7 @@ namespace EveStaticDataExportConverter.Classes.BSD
     internal class InvPosition
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long itemID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public double pitch { get; set; }

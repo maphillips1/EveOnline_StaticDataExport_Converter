@@ -13,6 +13,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
         public BlueprintActivities activities {  get; set; }
 
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int blueprintTypeID { get; set; }
 
         [Attributes.SQLiteType("INT")]

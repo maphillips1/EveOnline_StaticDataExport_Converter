@@ -5,6 +5,7 @@ using EveStaticDataExportConverter.Classes.Universe.SupportingClasses;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace EveStaticDataExportConverter
 {
@@ -39,11 +40,14 @@ namespace EveStaticDataExportConverter
         private List<StarStatistics> starStats = new List<StarStatistics>();
         private List<SolarSystemStargate> solarSystemStargates = new List<SolarSystemStargate>();
 
+        private List<SolarSystemSovereignty> sovereignties = null;
+
         public bool ConvertUniverse()
         {
             string[] universeAreas = Directory.GetDirectories(unversePath);
 
             CreateTables();
+            GetSolarSystemSovereignties();
 
             foreach (string universeArea in universeAreas)
             {
@@ -51,6 +55,11 @@ namespace EveStaticDataExportConverter
             }
             HandleLeftoverRecords();
             return true;
+        }
+
+        private void GetSolarSystemSovereignties()
+        {
+            sovereignties = ESICalls.GetSolarSystemSovereignties();
         }
 
         private void CreateTables()
@@ -155,7 +164,7 @@ namespace EveStaticDataExportConverter
             if (region != null)
             {
                 regionID = region.regionID;
-                region.regionName = regionName;
+                region.regionName = GetRegionNameWithSpaces(regionName);
                 region.regionTypeName = regionTypeName;
 
                 if (region.center?.Count > 0)
@@ -182,6 +191,27 @@ namespace EveStaticDataExportConverter
                 DatabaseManager.InsertRecordForType<Region>(regionTableInfo, region);
             }
             return regionID;
+        }
+
+        private string GetRegionNameWithSpaces(string regionName)
+        {
+            if (regionName == "ValeoftheSilent")
+            {
+                return "Vale of the Silent";
+            }
+
+            string newString = "";
+            int count = 0;
+            foreach (char c in regionName)
+            {
+                if (count > 0 && char.IsUpper(c) && regionName[count - 1] != '-' && (count - 1) != 0)
+                {
+                    newString += " ";
+                }
+                newString += c;
+                count++;
+            }
+            return newString;
         }
 
         private void ProcessConstellation(string constellationPath, long regionID)
@@ -255,6 +285,12 @@ namespace EveStaticDataExportConverter
                 solarSystem.regionID = regionID;
                 solarSystem.constellationId = constellationID;
                 solarSystem.solarSystemName = systemName;
+
+                SolarSystemSovereignty sovInfo = sovereignties.Find(x => x.system_id == solarSystem.solarSystemID);
+                if (sovInfo != null)
+                {
+                    solarSystem.factionID = sovInfo.faction_id;
+                }
 
                 if (solarSystem.center?.Count > 0)
                 {

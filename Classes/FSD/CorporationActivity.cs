@@ -14,6 +14,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
         }
 
         [Attributes.SQLIgnore()]
+        [Attributes.SQLiteIndex()]
         public int corporationActivityID { get; set; }
 
         [Attributes.SQLIgnore()]

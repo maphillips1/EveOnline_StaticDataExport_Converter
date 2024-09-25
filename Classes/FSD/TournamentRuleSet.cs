@@ -16,6 +16,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
         }
 
         [Attributes.SQLiteType("TEXT")]
+        [Attributes.SQLiteIndex()]
         public string ruleSetID { get; set; }
 
         [Attributes.SQLiteType("TEXT")]

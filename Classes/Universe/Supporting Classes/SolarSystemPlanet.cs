@@ -10,8 +10,10 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     internal class SolarSystemPlanet
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long solarSystemID {  get; set; }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long planetID { get; set; }
         [Attributes.SQLIgnore()]
         [Newtonsoft.Json.JsonConverter(typeof(PlanetAsteroidBeltConverter))]

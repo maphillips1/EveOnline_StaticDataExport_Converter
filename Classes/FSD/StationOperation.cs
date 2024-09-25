@@ -12,6 +12,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class StationOperation
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int stationOperationID {  get; set; }
 
         [Attributes.SQLiteType("INT")]

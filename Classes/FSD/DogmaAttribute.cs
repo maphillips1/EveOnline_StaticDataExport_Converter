@@ -15,9 +15,11 @@ namespace EveStaticDataExportConverter.Classes.FSD
             name = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int attributeID {  get; set; }
 
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int categoryID { get; set; }
 
         [Attributes.SQLiteType("INT")]

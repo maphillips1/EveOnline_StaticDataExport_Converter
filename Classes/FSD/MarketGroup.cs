@@ -10,6 +10,7 @@ namespace EveStaticDataExportConverter.Classes.FSD
     internal class MarketGroup
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public int marketGroupId {  get; set; }
 
         [Attributes.SQLIgnore()]

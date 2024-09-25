@@ -8,6 +8,7 @@ namespace EveStaticDataExportConverter.Classes.FSD.Supporting_Classes
 {
     internal class NPCCorpLPOfferTable
     {
+        [Attributes.SQLiteIndex()]
         [Attributes.SQLiteType("INT")]
         public long npcCorporationID {  get; set; }
         [Attributes.SQLiteType("INT")]

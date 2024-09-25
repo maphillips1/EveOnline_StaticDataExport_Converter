@@ -13,6 +13,7 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
             spectralClass = "";
         }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long planetID {  get; set; }
         [Attributes.SQLiteType("INT")]
         public decimal density { get; set; }

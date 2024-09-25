@@ -9,8 +9,10 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     internal class PlanetMoon
     {
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long planetID {  get; set; }
         [Attributes.SQLiteType("INT")]
+        [Attributes.SQLiteIndex()]
         public long moonID { get; set; }
         [Attributes.SQLIgnore()]
         public MoonAttributes planetAttributes { get; set; }
