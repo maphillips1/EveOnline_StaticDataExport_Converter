@@ -31,20 +31,20 @@ def convertFilesInDirectory(inDir, outDir):
 
 def convertSDEToJSON():
     startingDirectory = 'sde'
-    yaml_FSD = startingDirectory + '/fsd'
+    yaml_SDEClasses = startingDirectory + '/SDEClasses'
     yaml_BSD =  startingDirectory + '/bsd'
     yaml_Uni =  startingDirectory + '/universe'
 
     endingDirectory = 'json_sde'
-    json_FSD = endingDirectory + '/fsd'
+    json_SDEClasses = endingDirectory + '/SDEClasses'
     json_BSD = endingDirectory + '/bsd'
     json_Uni = endingDirectory + '/universe'
 
 
-    print('processing FSD')
+    print('processing SDEClasses')
     startTime = time.time()
-    convertFilesInDirectory(yaml_FSD, json_FSD)
-    finishedFSD = time.time()
+    convertFilesInDirectory(yaml_SDEClasses, json_SDEClasses)
+    finishedSDEClasses = time.time()
     print('processing BSD')
     convertFilesInDirectory(yaml_BSD, json_BSD)
     finishedBSD = time.time()
@@ -53,7 +53,7 @@ def convertSDEToJSON():
     finishedUniverse = time.time()
 
     print(startTime)
-    print(finishedFSD)
+    print(finishedSDEClasses)
     print(finishedBSD)
     print(finishedUniverse)
 

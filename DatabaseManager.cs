@@ -7,8 +7,12 @@ using System.Data.SQLite;
 using EveStaticDataExportConverter.Classes.Database;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Reflection;
-using EveStaticDataExportConverter.Classes.FSD.Supporting_Classes;
+using EveStaticDataExportConverter.Classes.SDEClasses.Supporting_Classes;
 using EveStaticDataExportConverter.Classes.Attributes;
+using EveStaticDataExportConverter.Classes.SDEClasses;
+using System.Diagnostics;
+using EveStaticDataExportConverter.Classes;
+using Newtonsoft.Json.Linq;
 
 namespace EveStaticDataExportConverter
 {
@@ -25,6 +29,32 @@ namespace EveStaticDataExportConverter
             System.IO.FileInfo fileInfo = new FileInfo(outputFilePath);
             fileInfo.Directory.Create();
             SQLiteConnection.CreateFile(outputFilePath);
+        }
+
+        public static void AddReleaseInformation()
+        {
+            Stopwatch sw = new Stopwatch();
+            try
+            {
+                string SDEPath = "C:\\Users\\mrphi\\source\\repos\\EveStaticDataExportConverter\\EveOnline_StaticDataExport_Converter\\json_sde";
+                string path = SDEPath + "\\_sde.jsonl";
+                string json = File.ReadAllText(path);
+
+                ReleaseInformation tableInfoReleaseInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<ReleaseInformation>(json);
+                if (tableInfoReleaseInfo != null)
+                {
+                    TableInfo agentTableInfo = DatabaseManager.GetTableInfo<ReleaseInformation>(tableInfoReleaseInfo);
+                    DatabaseManager.CreateTable(agentTableInfo);
+                    List<ReleaseInformation> batchReleaseInfo = new List<ReleaseInformation>();
+                    Utility.AddRecordToBatch<ReleaseInformation>(agentTableInfo, ref batchReleaseInfo, tableInfoReleaseInfo);
+                    Utility.InsertBatchRecord<ReleaseInformation>(agentTableInfo, batchReleaseInfo);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Converting Agents Failed: Ex = " + ex.Message);
+            }
         }
 
         public static TableInfo GetTableInfo<T>(T objectForTable)
@@ -109,33 +139,6 @@ namespace EveStaticDataExportConverter
 
             indexCommand.Append(")");
             ExecuteCommand(indexCommand.ToString());
-        }
-
-        public static void InsertRecordForType<T>(TableInfo tableInfo, T record)
-        {
-            List<string> values = null;
-            System.TypeCode typeCode;
-            values = new List<string>();
-            Classes.Attributes.SQLIgnore sqlIgnore;
-            foreach (System.Reflection.PropertyInfo property in typeof(T).GetProperties())
-            {
-                sqlIgnore = property.GetCustomAttribute<Classes.Attributes.SQLIgnore>();
-                if (sqlIgnore != null) { continue; }
-
-                typeCode = Type.GetTypeCode(property.PropertyType);
-                if (typeCode == TypeCode.Boolean)
-                {
-                    values.Add((Convert.ToBoolean(property.GetValue(record)) ? 1 : 0).ToString());
-                }
-                else
-                {
-                    values.Add(property.GetValue(record).ToString());
-                }
-            }
-            if (values.Count > 0 && values.Count == tableInfo.columns.Count)
-            {
-                InsertRecord(tableInfo, values);
-            }
         }
 
         public static void InsertRecord(TableInfo tableInfo, List<string> values)
@@ -261,6 +264,11 @@ namespace EveStaticDataExportConverter
             command.ExecuteNonQuery();
 
             m_dbConnection.Close();
+        }
+
+        private static void AddSchemaRecord(string tableName, string columnName, string sqLiteType, string cSharpType)
+        {
+
         }
     }
 }

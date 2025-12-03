@@ -1,4 +1,4 @@
-﻿using EveStaticDataExportConverter.Classes.FSD;
+﻿using EveStaticDataExportConverter.Classes.SDEClasses;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System;
@@ -30,13 +30,6 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes.Conve
                 if (newSolarSystemStargate != null)
                 {
                     newSolarSystemStargate.stargateID = Convert.ToInt32(jToken.Path);
-
-                    if (newSolarSystemStargate.position?.Count > 0)
-                    {
-                        newSolarSystemStargate.positionX = newSolarSystemStargate.position[0];
-                        newSolarSystemStargate.positionY = newSolarSystemStargate.position[1];
-                        newSolarSystemStargate.positionZ = newSolarSystemStargate.position[2];
-                    }
 
                     solarSystemStargates.Add(newSolarSystemStargate);
                 }

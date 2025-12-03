@@ -10,22 +10,9 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
     {
         [Attributes.SQLiteType("INT")]
         [Attributes.SQLiteIndex()]
-        public long planetID {  get; set; }
+        public long planetID { get; set; }
         [Attributes.SQLiteType("INT")]
         [Attributes.SQLiteIndex()]
-        public long asteroidBeltID { get; set; }
-        [Attributes.SQLIgnore()]
-        public List<double> position { get; set; }
-        [Attributes.SQLIgnore()]
-        public AsteroidBetlStatistics statistics { get; set; }
-        [Attributes.SQLiteType("INT")]
-        public int typeID { get; set; }
-
-        [Attributes.SQLiteType("INT")]
-        public double positionX { get; set; }
-        [Attributes.SQLiteType("INT")]
-        public double positionY { get; set; }
-        [Attributes.SQLiteType("INT")]
-        public double positionZ { get; set; }
+        public long asteroidBeltId { get; set; }
     }
 }

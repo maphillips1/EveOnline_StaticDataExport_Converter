@@ -21,39 +21,12 @@ public class SDEConverter
 
         //Delete the current sqlite DB and create a new one. 
         DatabaseManager.ClearSQLiteFile();
+        DatabaseManager.AddReleaseInformation();
+
+        JSONConverter sDEConverter = new JSONConverter();
+        success = sDEConverter.ConvertSDE();
 
 
-        //Convert FSD
-        Stopwatch fsdStopWatch = new Stopwatch();
-        fsdStopWatch.Start();
-        Console.WriteLine("Converting FSD");
-        FSDConverter fSDConverter = new FSDConverter();
-        success = fSDConverter.ConvertFSD();
-        fsdStopWatch.Stop();
-
-        //Convert BSD
-        Stopwatch bsdStopWatch = new Stopwatch();
-        bsdStopWatch.Restart();
-        Console.WriteLine("");
-        Console.WriteLine("Converting BSD");
-        BSDConverter bSDConverter = new BSDConverter();
-        success = bSDConverter.ConvertBSD();
-        bsdStopWatch.Stop();
-
-        //Convert Universe
-        Stopwatch universeStopWatch = new Stopwatch();
-        universeStopWatch.Restart();
-        Console.WriteLine("");
-        Console.WriteLine("Converting Universe");
-        UniverseConverter universeConverter = new UniverseConverter();
-        success = universeConverter.ConvertUniverse();
-        universeStopWatch.Stop();
-        Console.WriteLine();
-        Console.WriteLine();
-
-        Utility.LogElapsedTime(fsdStopWatch, "Converting FSD");
-        Utility.LogElapsedTime(bsdStopWatch, "Converting BSD");
-        Utility.LogElapsedTime(universeStopWatch, "Converting Universe");
 
         return success;
     }

@@ -14,19 +14,5 @@ namespace EveStaticDataExportConverter.Classes.Universe.SupportingClasses
         [Attributes.SQLiteType("INT")]
         [Attributes.SQLiteIndex()]
         public long stargateID { get; set; }
-        [Attributes.SQLiteType("INT")]
-        [Attributes.SQLiteIndex()]
-        public long destination { get; set; }
-        [Attributes.SQLIgnore()]
-        public List<double> position {  get; set; }
-        [Attributes.SQLiteType("INT")]
-        public int typeID { get; set; }
-
-        [Attributes.SQLiteType("INT")]
-        public double positionX { get; set; }
-        [Attributes.SQLiteType("INT")]
-        public double positionY { get; set; }
-        [Attributes.SQLiteType("INT")]
-        public double positionZ { get; set; }
     }
 }

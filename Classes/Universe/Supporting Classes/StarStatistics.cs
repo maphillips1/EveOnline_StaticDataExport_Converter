@@ -20,8 +20,6 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes
         [Attributes.SQLiteType("INT")]
         public double life {  get; set; }
         [Attributes.SQLiteType("INT")]
-        public bool locked { get; set; }
-        [Attributes.SQLiteType("INT")]
         public decimal luminosity { get; set; }
         [Attributes.SQLiteType("INT")]
         public double radius { get; set; }

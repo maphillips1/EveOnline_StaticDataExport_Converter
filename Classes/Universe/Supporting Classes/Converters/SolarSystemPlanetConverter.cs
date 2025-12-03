@@ -18,24 +18,18 @@ namespace EveStaticDataExportConverter.Classes.Universe.Supporting_Classes.Conve
 
         public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
-            List<SolarSystemPlanet> solarSystemPlanets = new List<SolarSystemPlanet>();
-            SolarSystemPlanet newSolarSystemPlanet = null;
+            List<mapPlanet> solarSystemPlanets = new List<mapPlanet>();
+            mapPlanet newSolarSystemPlanet = null;
 
             JObject jObject = JObject.Load(reader);
 
             foreach (JToken jToken in jObject.Children())
             {
-                newSolarSystemPlanet = Newtonsoft.Json.JsonConvert.DeserializeObject<SolarSystemPlanet>(jToken.First.ToString());
+                newSolarSystemPlanet = Newtonsoft.Json.JsonConvert.DeserializeObject<mapPlanet>(jToken.First.ToString());
                 if (newSolarSystemPlanet != null)
                 {
                     newSolarSystemPlanet.planetID = Convert.ToInt32(jToken.Path);
 
-                    if (newSolarSystemPlanet.position?.Count > 0)
-                    {
-                        newSolarSystemPlanet.positionX = newSolarSystemPlanet.position[0];
-                        newSolarSystemPlanet.positionY = newSolarSystemPlanet.position[1];
-                        newSolarSystemPlanet.positionZ = newSolarSystemPlanet.position[2];
-                    }
 
                     solarSystemPlanets.Add(newSolarSystemPlanet);
                 }
