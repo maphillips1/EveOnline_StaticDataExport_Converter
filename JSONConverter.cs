@@ -3577,6 +3577,7 @@ namespace EveStaticDataExportConverter
                 Utility.InsertBatchRecord(planetSchematicTable, batchSchematics);
                 Utility.InsertBatchRecord(nameTable, batchNames);
                 Utility.InsertBatchRecord(planetSchematicPinTable, batchPins);
+                Utility.InsertBatchRecord(planetSchematicTypeTable, batchTypes);
             }
             catch (Exception ex)
             {

@@ -12,6 +12,7 @@ namespace EveStaticDataExportConverter.Classes.SDEClasses.Supporting_Classes
         [Attributes.SQLiteIndex()]
         public int planetSchematicID {  get; set; }
         [Attributes.SQLiteType("INT")]
+        [Newtonsoft.Json.JsonProperty("_key")]
         public int planetSchematicTypeID { get; set; }
         [Attributes.SQLiteType("INT")]
         public bool isInput {  get; set; }
